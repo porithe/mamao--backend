@@ -1,0 +1,29 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+datasource db {
+  provider = "postgresql"
+  url      = env("MAMAO_DB_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+enum Status {
+    ACTIVE
+    DELETED
+}
+
+model User {
+  uuid      String      @id @default(uuid())
+  username  String      @unique
+  email     String      @unique
+  password  String
+  description String?
+  avatar    String?
+  following Int?
+  followers Int?
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+}
