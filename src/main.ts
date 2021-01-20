@@ -13,6 +13,7 @@ async function bootstrap() {
     .setDescription('The mamao is a classic social media web application.')
     .setVersion('1.0')
     .addTag('auth')
+    .addBearerAuth({ type: 'http', scheme: 'bearer', bearerFormat: 'JWT' })
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);

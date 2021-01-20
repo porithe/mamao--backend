@@ -49,7 +49,6 @@ export class AuthService {
   }
 
   async login(user: any): Promise<IUserLoggedIn> {
-    console.log(user);
     const payload = { user, sub: user.uuid };
     return {
       uuid: user.uuid,

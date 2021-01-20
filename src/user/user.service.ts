@@ -1,7 +1,11 @@
 import { HttpException, Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { User } from '@prisma/client';
-import { CreateUserDto, ICreatedUser } from '../constants/user';
+import {
+  CreateUserDto,
+  EditUserDataDto,
+  ICreatedUser,
+} from '../constants/user';
 import { hash } from 'bcrypt';
 
 @Injectable()
@@ -54,5 +58,23 @@ export class UserService {
       },
     });
     return !!user;
+  }
+
+  async editUserData(uuid: string, userData: EditUserDataDto): Promise<any> {
+    try {
+      const editedData = await this.prisma.user.update({
+        where: {
+          uuid,
+        },
+        data: userData,
+      });
+      return {
+        description: editedData.description,
+        avatar: editedData.avatar,
+      };
+    } catch (err) {
+      const { message, status } = err;
+      throw new HttpException(message, status);
+    }
   }
 }

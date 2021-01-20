@@ -20,12 +20,6 @@ export class CreateUserDto {
   @IsEmail()
   email: string;
 }
-export interface ICreatedUser {
-  uuid: string;
-  username: string;
-  email: string;
-  createdAt: Date;
-}
 
 export class LoginUserDto {
   @ApiProperty({
@@ -41,8 +35,34 @@ export class LoginUserDto {
   password: string;
 }
 
+export class EditUserDataDto {
+  @ApiProperty({
+    default: 'My description',
+  })
+  @Length(0, 120)
+  description: string;
+
+  @ApiProperty({
+    default: 'myimg.com/img.jpg',
+  })
+  @Length(0, 120)
+  avatar: string;
+}
+
+export interface ICreatedUser {
+  uuid: string;
+  username: string;
+  email: string;
+  createdAt: Date;
+}
+
 export interface IUserLoggedIn {
   uuid: string;
   username: string;
   accessToken: string;
+}
+
+export interface IUserRequestJwt {
+  uuid: string;
+  username: string;
 }
