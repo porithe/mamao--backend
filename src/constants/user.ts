@@ -1,5 +1,6 @@
-import { IsEmail, Length } from 'class-validator';
+import { IsEmail, Length, ValidateNested } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
+import { Type } from 'class-transformer';
 
 export class CreateUserDto {
   @ApiProperty({
@@ -21,7 +22,13 @@ export class CreateUserDto {
   email: string;
 }
 
+export class Test {
+  username: 'johndoe';
+  password: 'pa$Sw0rd';
+}
+
 export class LoginUserDto {
+  @ValidateNested({ each: true })
   @ApiProperty({
     default: 'johndoe',
   })
@@ -62,7 +69,24 @@ export interface IUserLoggedIn {
   accessToken: string;
 }
 
+export interface IValidatedUser {
+  uuid: string;
+  username: string;
+  email: string;
+  description: string | null;
+  avatar: string | null;
+  following: number | null;
+  followers: number | null;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
 export interface IUserRequestJwt {
   uuid: string;
   username: string;
+}
+
+export interface IUserDataUpdated {
+  description?: string;
+  avatar?: string;
 }

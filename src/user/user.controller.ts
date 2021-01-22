@@ -1,12 +1,11 @@
 import { Body, Controller, Patch, Request, UseGuards } from '@nestjs/common';
 import { UserService } from './user.service';
-import { EditUserDataDto, IUserRequestJwt } from '../constants/user';
+import { EditUserDataDto, IUserDataUpdated, IUserRequestJwt } from '../constants/user';
 import {
   ApiBadRequestResponse,
   ApiBearerAuth,
-  ApiCreatedResponse,
   ApiInternalServerErrorResponse,
-  ApiNotFoundResponse, ApiOkResponse,
+  ApiOkResponse,
   ApiTags,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
@@ -35,7 +34,7 @@ export class UserController {
   async updateData(
     @Body() userData: EditUserDataDto,
     @Request() req: { user: IUserRequestJwt },
-  ): Promise<any> {
+  ): Promise<IUserDataUpdated> {
     return this.userService.editUserData(req.user.uuid, userData);
   }
 }

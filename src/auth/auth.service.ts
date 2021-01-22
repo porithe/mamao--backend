@@ -2,7 +2,13 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { compareSync } from 'bcrypt';
 import { UserService } from '../user/user.service';
-import { CreateUserDto, ICreatedUser, IUserLoggedIn, LoginUserDto } from '../constants/user';
+import {
+  CreateUserDto,
+  ICreatedUser,
+  IUserLoggedIn,
+  IValidatedUser,
+  LoginUserDto,
+} from '../constants/user';
 import { User } from '@prisma/client';
 
 enum ErrorMessages {
@@ -31,10 +37,16 @@ export class AuthService {
     }
   }
 
-  async validateUser(username: string, password: string): Promise<User | null> {
+  async validateUser(
+    username: string,
+    password: string,
+  ): Promise<IValidatedUser | null> {
     try {
       const user = await this.userService.findOne(username);
-      if (user && compareSync(password, user.password)) return user;
+      if (user && compareSync(password, user.password)) {
+        const { password, ...result } = user;
+        return result;
+      }
       if (!user) {
         throw new HttpException(
           ErrorMessages.USER_NOT_FOUND,
@@ -49,7 +61,11 @@ export class AuthService {
   }
 
   async login(user: any): Promise<IUserLoggedIn> {
-    const payload = { user, sub: user.uuid };
+    const payload = {
+      username: user.username,
+      uuid: user.uuid,
+      sub: user.uuid,
+    };
     return {
       uuid: user.uuid,
       username: user.username,

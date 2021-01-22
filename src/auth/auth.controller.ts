@@ -1,13 +1,24 @@
 import { Body, Controller, Post, UseGuards, Request } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LocalAuthGuard } from './local-auth.guard';
-import { CreateUserDto, ICreatedUser, LoginUserDto } from '../constants/user';
+import {
+  CreateUserDto,
+  ICreatedUser,
+  IUserLoggedIn,
+  LoginUserDto,
+  Test,
+} from '../constants/user';
 import { DoesUserExistGuard } from './doesUserExist.guard';
 import {
   ApiBadRequestResponse,
+  ApiBody,
   ApiConflictResponse,
   ApiCreatedResponse,
-  ApiInternalServerErrorResponse, ApiNotFoundResponse, ApiTags, ApiUnauthorizedResponse,
+  ApiHeader,
+  ApiInternalServerErrorResponse,
+  ApiNotFoundResponse,
+  ApiTags,
+  ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 
 @ApiTags('auth')
@@ -33,6 +44,15 @@ export class AuthController {
     return this.authService.register(userData);
   }
 
+  @ApiBody({
+    schema: {
+      type: 'object',
+      example: {
+        username: 'johndoe',
+        password: 'pa$Sw0rd',
+      },
+    },
+  })
   @ApiCreatedResponse({
     description: 'Successfully logged in.',
   })
@@ -50,7 +70,7 @@ export class AuthController {
   })
   @UseGuards(LocalAuthGuard)
   @Post('login')
-  async login(@Request() req: { user: LoginUserDto }) {
-    return this.authService.login(req.user);
+  async login(@Request() req: { user: LoginUserDto }): Promise<IUserLoggedIn> {
+    return await this.authService.login(req.user);
   }
 }

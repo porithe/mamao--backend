@@ -4,7 +4,7 @@ import { User } from '@prisma/client';
 import {
   CreateUserDto,
   EditUserDataDto,
-  ICreatedUser,
+  ICreatedUser, IUserDataUpdated,
 } from '../constants/user';
 import { hash } from 'bcrypt';
 
@@ -60,17 +60,19 @@ export class UserService {
     return !!user;
   }
 
-  async editUserData(uuid: string, userData: EditUserDataDto): Promise<any> {
+  async editUserData(
+    uuid: string,
+    userData: EditUserDataDto,
+  ): Promise<IUserDataUpdated> {
     try {
-      const editedData = await this.prisma.user.update({
+      await this.prisma.user.update({
         where: {
           uuid,
         },
         data: userData,
       });
       return {
-        description: editedData.description,
-        avatar: editedData.avatar,
+        ...userData,
       };
     } catch (err) {
       const { message, status } = err;
