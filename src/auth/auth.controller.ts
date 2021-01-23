@@ -6,7 +6,6 @@ import {
   ICreatedUser,
   IUserLoggedIn,
   LoginUserDto,
-  Test,
 } from '../constants/user';
 import { DoesUserExistGuard } from './doesUserExist.guard';
 import {

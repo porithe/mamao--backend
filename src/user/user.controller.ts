@@ -1,6 +1,10 @@
 import { Body, Controller, Patch, Request, UseGuards } from '@nestjs/common';
 import { UserService } from './user.service';
-import { EditUserDataDto, IUserDataUpdated, IUserRequestJwt } from '../constants/user';
+import {
+  EditUserDataDto,
+  IUserDataUpdated,
+  IUserRequestJwt,
+} from '../constants/user';
 import {
   ApiBadRequestResponse,
   ApiBearerAuth,

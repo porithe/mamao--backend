@@ -1,6 +1,5 @@
 import { IsEmail, Length, ValidateNested } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
-import { Type } from 'class-transformer';
 
 export class CreateUserDto {
   @ApiProperty({
@@ -20,11 +19,6 @@ export class CreateUserDto {
   })
   @IsEmail()
   email: string;
-}
-
-export class Test {
-  username: 'johndoe';
-  password: 'pa$Sw0rd';
 }
 
 export class LoginUserDto {

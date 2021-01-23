@@ -24,6 +24,16 @@ model User {
   avatar    String?
   following Int?
   followers Int?
+  posts     Post[]
   createdAt DateTime    @default(now())
   updatedAt DateTime    @updatedAt
+}
+
+model Post {
+  uuid      String      @id @default(uuid())
+  text      String
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+  author    User        @relation(fields: [authorUuid], references: [uuid])
+  authorUuid String
 }
