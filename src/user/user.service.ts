@@ -1,10 +1,13 @@
-import { HttpException, Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { User } from '@prisma/client';
 import {
   CreateUserDto,
   EditUserDataDto,
-  ICreatedUser, IUserDataUpdated,
+  ICreatedUser,
+  IUserDataUpdated,
+  IUserProfile,
+  UserErrorMessages,
 } from '../constants/user';
 import { hash } from 'bcrypt';
 
@@ -74,6 +77,50 @@ export class UserService {
       return {
         ...userData,
       };
+    } catch (err) {
+      const { message, status } = err;
+      throw new HttpException(message, status);
+    }
+  }
+
+  async findProfile(username: string): Promise<IUserProfile | null> {
+    try {
+      const profile = await this.prisma.user.findUnique({
+        where: {
+          username,
+        },
+        select: {
+          username: true,
+          description: true,
+          avatar: true,
+          followers: true,
+          following: true,
+          posts: {
+            orderBy: {
+              createdAt: 'asc',
+            },
+            select: {
+              uuid: true,
+              text: true,
+              createdAt: true,
+            },
+          },
+        },
+      });
+      if (profile) {
+        return {
+          username: profile.username,
+          description: profile.description || '',
+          avatar: profile.avatar || '',
+          followers: profile.followers || 0,
+          following: profile.following || 0,
+          posts: profile.posts || [],
+        };
+      }
+      throw new HttpException(
+        UserErrorMessages.NOT_FOUND,
+        HttpStatus.NOT_FOUND,
+      );
     } catch (err) {
       const { message, status } = err;
       throw new HttpException(message, status);

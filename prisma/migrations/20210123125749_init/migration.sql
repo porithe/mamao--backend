@@ -17,8 +17,22 @@ CREATE TABLE "User" (
     PRIMARY KEY ("uuid")
 );
 
+-- CreateTable
+CREATE TABLE "Post" (
+    "uuid" TEXT NOT NULL,
+    "text" TEXT NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+    "authorUuid" TEXT NOT NULL,
+
+    PRIMARY KEY ("uuid")
+);
+
 -- CreateIndex
 CREATE UNIQUE INDEX "User.username_unique" ON "User"("username");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "User.email_unique" ON "User"("email");
+
+-- AddForeignKey
+ALTER TABLE "Post" ADD FOREIGN KEY("authorUuid")REFERENCES "User"("uuid") ON DELETE CASCADE ON UPDATE CASCADE;

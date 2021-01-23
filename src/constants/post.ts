@@ -9,6 +9,12 @@ export class AddPostDto {
   text: string;
 }
 
+export interface IProfilePost {
+  uuid: string;
+  text: string;
+  createdAt: Date;
+}
+
 export interface IAddedPost {
   uuid: string;
   createdAt: Date;

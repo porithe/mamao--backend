@@ -1,5 +1,10 @@
 import { IsEmail, Length, ValidateNested } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
+import { IProfilePost } from './post';
+
+export enum UserErrorMessages {
+  NOT_FOUND = 'User not found.',
+}
 
 export class CreateUserDto {
   @ApiProperty({
@@ -50,6 +55,14 @@ export class EditUserDataDto {
   avatar: string;
 }
 
+export class FindProfileDto {
+  @ApiProperty({
+    default: 'johndoe',
+  })
+  @Length(4, 24)
+  username: string;
+}
+
 export interface ICreatedUser {
   uuid: string;
   username: string;
@@ -83,4 +96,13 @@ export interface IUserRequestJwt {
 export interface IUserDataUpdated {
   description?: string;
   avatar?: string;
+}
+
+export interface IUserProfile {
+  username: string;
+  description: string;
+  avatar: string | null;
+  followers: number | null;
+  following: number | null;
+  posts: IProfilePost[];
 }

@@ -2,7 +2,8 @@ import { Body, Controller, Post, UseGuards, Request } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
   ApiBearerAuth,
-  ApiCreatedResponse, ApiInternalServerErrorResponse,
+  ApiCreatedResponse,
+  ApiInternalServerErrorResponse,
   ApiTags,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';

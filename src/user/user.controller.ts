@@ -1,14 +1,14 @@
-import { Body, Controller, Patch, Request, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, Patch, Request, UseGuards } from '@nestjs/common';
 import { UserService } from './user.service';
 import {
-  EditUserDataDto,
+  EditUserDataDto, FindProfileDto,
   IUserDataUpdated,
   IUserRequestJwt,
 } from '../constants/user';
 import {
   ApiBadRequestResponse,
   ApiBearerAuth,
-  ApiInternalServerErrorResponse,
+  ApiInternalServerErrorResponse, ApiNotFoundResponse,
   ApiOkResponse,
   ApiTags,
   ApiUnauthorizedResponse,
@@ -16,11 +16,11 @@ import {
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 
 @ApiTags('user')
-@ApiBearerAuth()
 @Controller('v1/user')
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
+  @ApiBearerAuth()
   @ApiOkResponse({
     description: 'Successfully edited user data.',
   })
@@ -40,5 +40,22 @@ export class UserController {
     @Request() req: { user: IUserRequestJwt },
   ): Promise<IUserDataUpdated> {
     return this.userService.editUserData(req.user.uuid, userData);
+  }
+
+  @ApiOkResponse({
+    description: 'Successfully returned user profile.',
+  })
+  @ApiBadRequestResponse({
+    description: 'Bad request (validation error?).',
+  })
+  @ApiNotFoundResponse({
+    description: 'User not found.',
+  })
+  @ApiInternalServerErrorResponse({
+    description: 'Internal server error',
+  })
+  @Get(':username')
+  async findProfile(@Param() params: FindProfileDto) {
+    return await this.userService.findProfile(params.username);
   }
 }
