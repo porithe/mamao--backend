@@ -93,18 +93,8 @@ export class UserService {
           username: true,
           description: true,
           avatar: true,
-          followers: true,
-          following: true,
-          posts: {
-            orderBy: {
-              createdAt: 'asc',
-            },
-            select: {
-              uuid: true,
-              text: true,
-              createdAt: true,
-            },
-          },
+          followersCount: true,
+          followingCount: true,
         },
       });
       if (profile) {
@@ -112,9 +102,8 @@ export class UserService {
           username: profile.username,
           description: profile.description || '',
           avatar: profile.avatar || '',
-          followers: profile.followers || 0,
-          following: profile.following || 0,
-          posts: profile.posts || [],
+          followersCount: profile.followersCount,
+          followingCount: profile.followingCount,
         };
       }
       throw new HttpException(

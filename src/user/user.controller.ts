@@ -1,14 +1,25 @@
-import { Body, Controller, Get, Param, Patch, Request, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Patch,
+  Request,
+  UseGuards,
+} from '@nestjs/common';
 import { UserService } from './user.service';
 import {
-  EditUserDataDto, FindProfileDto,
+  EditUserDataDto,
+  FindProfileDto,
   IUserDataUpdated,
+  IUserProfile,
   IUserRequestJwt,
 } from '../constants/user';
 import {
   ApiBadRequestResponse,
   ApiBearerAuth,
-  ApiInternalServerErrorResponse, ApiNotFoundResponse,
+  ApiInternalServerErrorResponse,
+  ApiNotFoundResponse,
   ApiOkResponse,
   ApiTags,
   ApiUnauthorizedResponse,
@@ -55,7 +66,9 @@ export class UserController {
     description: 'Internal server error',
   })
   @Get(':username')
-  async findProfile(@Param() params: FindProfileDto) {
+  async findProfile(
+    @Param() params: FindProfileDto,
+  ): Promise<IUserProfile | null> {
     return await this.userService.findProfile(params.username);
   }
 }

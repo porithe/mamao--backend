@@ -9,13 +9,22 @@ export class AddPostDto {
   text: string;
 }
 
-export interface IProfilePost {
-  uuid: string;
-  text: string;
-  createdAt: Date;
+export class FindPostsDto {
+  @ApiProperty({
+    default: 'johndoe',
+  })
+  @Length(4, 24)
+  username: string;
 }
 
 export interface IAddedPost {
   uuid: string;
   createdAt: Date;
+}
+
+export interface IFoundPosts {
+  uuid: string;
+  createdAt: Date;
+  text: string;
+  commentsCount: number;
 }

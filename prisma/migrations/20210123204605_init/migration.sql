@@ -9,8 +9,8 @@ CREATE TABLE "User" (
     "password" TEXT NOT NULL,
     "description" TEXT,
     "avatar" TEXT,
-    "following" INTEGER,
-    "followers" INTEGER,
+    "followingCount" INTEGER NOT NULL DEFAULT 0,
+    "followersCount" INTEGER NOT NULL DEFAULT 0,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
@@ -28,11 +28,32 @@ CREATE TABLE "Post" (
     PRIMARY KEY ("uuid")
 );
 
+-- CreateTable
+CREATE TABLE "Comment" (
+    "uuid" TEXT NOT NULL,
+    "text" TEXT NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+    "postUuid" TEXT NOT NULL,
+    "userUuid" TEXT NOT NULL,
+
+    PRIMARY KEY ("uuid")
+);
+
 -- CreateIndex
 CREATE UNIQUE INDEX "User.username_unique" ON "User"("username");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "User.email_unique" ON "User"("email");
 
+-- CreateIndex
+CREATE UNIQUE INDEX "Comment_userUuid_unique" ON "Comment"("userUuid");
+
 -- AddForeignKey
 ALTER TABLE "Post" ADD FOREIGN KEY("authorUuid")REFERENCES "User"("uuid") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Comment" ADD FOREIGN KEY("postUuid")REFERENCES "Post"("uuid") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Comment" ADD FOREIGN KEY("userUuid")REFERENCES "User"("uuid") ON DELETE CASCADE ON UPDATE CASCADE;

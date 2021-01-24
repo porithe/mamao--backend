@@ -1,6 +1,5 @@
 import { IsEmail, Length, ValidateNested } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
-import { IProfilePost } from './post';
 
 export enum UserErrorMessages {
   NOT_FOUND = 'User not found.',
@@ -82,8 +81,8 @@ export interface IValidatedUser {
   email: string;
   description: string | null;
   avatar: string | null;
-  following: number | null;
-  followers: number | null;
+  followingCount: number;
+  followersCount: number;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -102,7 +101,6 @@ export interface IUserProfile {
   username: string;
   description: string;
   avatar: string | null;
-  followers: number | null;
-  following: number | null;
-  posts: IProfilePost[];
+  followersCount: number;
+  followingCount: number;
 }

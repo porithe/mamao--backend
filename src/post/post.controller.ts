@@ -1,4 +1,12 @@
-import { Body, Controller, Post, UseGuards, Request } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Post,
+  UseGuards,
+  Request,
+  Param,
+  Get,
+} from '@nestjs/common';
 import {
   ApiBadRequestResponse,
   ApiBearerAuth,
@@ -9,15 +17,20 @@ import {
 } from '@nestjs/swagger';
 import { PostService } from './post.service';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
-import { AddPostDto, IAddedPost } from '../constants/post';
+import {
+  AddPostDto,
+  FindPostsDto,
+  IAddedPost,
+  IFoundPosts,
+} from '../constants/post';
 import { IUserRequestJwt } from '../constants/user';
 
 @ApiTags('post')
-@ApiBearerAuth()
 @Controller('v1/post')
 export class PostController {
   constructor(private readonly postService: PostService) {}
 
+  @ApiBearerAuth()
   @ApiCreatedResponse({
     description: 'Post successfully created.',
   })
@@ -37,5 +50,10 @@ export class PostController {
     @Request() req: { user: IUserRequestJwt },
   ): Promise<IAddedPost> {
     return await this.postService.addPost(req.user.uuid, postData);
+  }
+
+  @Get('findAll/:username')
+  async findPosts(@Param() params: FindPostsDto): Promise<IFoundPosts[]> {
+    return await this.postService.findPosts(params.username);
   }
 }
