@@ -46,9 +46,6 @@ CREATE UNIQUE INDEX "User.username_unique" ON "User"("username");
 -- CreateIndex
 CREATE UNIQUE INDEX "User.email_unique" ON "User"("email");
 
--- CreateIndex
-CREATE UNIQUE INDEX "Comment_userUuid_unique" ON "Comment"("userUuid");
-
 -- AddForeignKey
 ALTER TABLE "Post" ADD FOREIGN KEY("authorUuid")REFERENCES "User"("uuid") ON DELETE CASCADE ON UPDATE CASCADE;
 

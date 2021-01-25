@@ -1,14 +1,10 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { AddCommentDto, IAddedComment } from '../constants/comment';
-import { PostService } from '../post/post.service';
 
 @Injectable()
 export class CommentService {
-  constructor(
-    private prisma: PrismaService,
-    private readonly postService: PostService,
-  ) {}
+  constructor(private prisma: PrismaService) {}
   async create(
     userUuid: string,
     { text, postUuid }: AddCommentDto,
@@ -29,13 +25,7 @@ export class CommentService {
           },
         },
       });
-      if (createdComment) {
-        await this.postService.addCommentsCount(createdComment.postUuid);
-        return {
-          uuid: createdComment.uuid,
-          createdAt: createdComment.createdAt,
-        };
-      }
+      if (createdComment) return createdComment;
       throw new HttpException('Post not found.', HttpStatus.NOT_FOUND);
     } catch (err) {
       const { message, status } = err;
@@ -48,6 +38,9 @@ export class CommentService {
       return await this.prisma.comment.findMany({
         where: {
           postUuid,
+        },
+        orderBy: {
+          createdAt: 'asc',
         },
       });
     } catch (err) {

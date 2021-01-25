@@ -26,45 +26,38 @@ export class PostService {
     }
   }
 
-  async addCommentsCount(postUuid: string): Promise<{ isSuccessful: boolean }> {
-    const post = await this.prisma.post.findUnique({
-      where: {
-        uuid: postUuid,
-      },
-      select: {
-        commentsCount: true,
-      },
-    });
-    if (!post) throw new HttpException('Post not found.', HttpStatus.NOT_FOUND);
-    const updatedPost = await this.prisma.post.update({
-      where: {
-        uuid: postUuid,
-      },
-      data: {
-        commentsCount: post.commentsCount + 1,
-      },
-    });
-    if (!updatedPost) return { isSuccessful: false };
-    return {
-      isSuccessful: true,
-    };
+  async addCommentsCountToPosts(posts: any): Promise<any> {
+    try {
+      for await (const post of posts) {
+        post.commentCountXD = await this.prisma.comment.count({
+          where: {
+            postUuid: post.uuid,
+          },
+        });
+      }
+      return posts;
+    } catch (err) {
+      const { message, status } = err;
+      throw new HttpException(message, status);
+    }
   }
 
   async findPosts(username: string): Promise<IFoundPosts[]> {
     try {
-      return await this.prisma.post.findMany({
+      const posts = await this.prisma.post.findMany({
         where: {
           author: {
             username,
           },
         },
-        select: {
-          uuid: true,
-          createdAt: true,
-          text: true,
-          commentsCount: true,
+        orderBy: {
+          createdAt: 'desc',
         },
       });
+      if (posts.length > 0) {
+        return await this.addCommentsCountToPosts(posts);
+      }
+      return [];
     } catch (err) {
       const { message, status } = err;
       throw new HttpException(message, status);
