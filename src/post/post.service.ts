@@ -42,7 +42,11 @@ export class PostService {
     }
   }
 
-  async findPosts(username: string): Promise<IFoundPosts[]> {
+  async findPosts(
+    username: string,
+    limit: number,
+    start: number,
+  ): Promise<IFoundPosts | []> {
     try {
       const posts = await this.prisma.post.findMany({
         where: {
@@ -53,9 +57,18 @@ export class PostService {
         orderBy: {
           createdAt: 'desc',
         },
+        skip: start,
+        take: limit,
       });
       if (posts.length > 0) {
-        return await this.addCommentsCountToPosts(posts);
+        return {
+          data: await this.addCommentsCountToPosts(posts),
+          pagination: {
+            next: `${
+              process.env.URL_API
+            }post/findAll/${username}/?limit=${limit}&start=${start + 10}`,
+          },
+        };
       }
       return [];
     } catch (err) {

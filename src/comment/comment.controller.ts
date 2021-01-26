@@ -16,7 +16,9 @@ import {
 import { IUserRequestJwt } from '../constants/user';
 import {
   ApiBadRequestResponse,
-  ApiBearerAuth, ApiCreatedResponse, ApiInternalServerErrorResponse,
+  ApiBearerAuth,
+  ApiCreatedResponse,
+  ApiInternalServerErrorResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
   ApiTags,

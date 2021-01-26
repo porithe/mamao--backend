@@ -22,9 +22,16 @@ export interface IAddedPost {
   createdAt: Date;
 }
 
-export interface IFoundPosts {
+interface FoundPost {
   uuid: string;
   createdAt: Date;
   text: string;
   commentsCount: number;
+}
+
+export interface IFoundPosts {
+  data: FoundPost[];
+  pagination: {
+    next: string;
+  };
 }

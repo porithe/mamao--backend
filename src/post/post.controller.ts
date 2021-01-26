@@ -6,12 +6,13 @@ import {
   Request,
   Param,
   Get,
+  Query, ParseIntPipe,
 } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
   ApiBearerAuth,
   ApiCreatedResponse,
-  ApiInternalServerErrorResponse,
+  ApiInternalServerErrorResponse, ApiQuery,
   ApiTags,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
@@ -52,8 +53,20 @@ export class PostController {
     return await this.postService.addPost(req.user.uuid, postData);
   }
 
+  @ApiQuery({
+    name: 'limit',
+    example: 10,
+  })
+  @ApiQuery({
+    name: 'start',
+    example: 0,
+  })
   @Get('findAll/:username')
-  async findPosts(@Param() params: FindPostsDto): Promise<IFoundPosts[]> {
-    return await this.postService.findPosts(params.username);
+  async findPosts(
+    @Param() params: FindPostsDto,
+    @Query('limit', ParseIntPipe) limit: number,
+    @Query('start', ParseIntPipe) start: number,
+  ): Promise<IFoundPosts | []> {
+    return await this.postService.findPosts(params.username, limit, start);
   }
 }
