@@ -96,4 +96,29 @@ export class UserController {
   ): Promise<{ success: boolean }> {
     return await this.userService.followUser(req.user.uuid, params.username);
   }
+
+  @ApiBearerAuth()
+  @ApiOkResponse({
+    description: 'Successfully unfollowed.',
+  })
+  @ApiBadRequestResponse({
+    description: 'Bad request (validation error?).',
+  })
+  @ApiNotFoundResponse({
+    description: 'User not found.',
+  })
+  @ApiConflictResponse({
+    description: 'User is not followed.',
+  })
+  @ApiInternalServerErrorResponse({
+    description: 'Internal server error',
+  })
+  @UseGuards(JwtAuthGuard)
+  @Put('unfollow/:username')
+  async unFollowProfile(
+    @Request() req: { user: IUserRequestJwt },
+    @Param() params: FollowUserDto,
+  ): Promise<{ success: boolean }> {
+    return await this.userService.unFollowUser(req.user.uuid, params.username);
+  }
 }

@@ -7,18 +7,12 @@ export class FollowerService {
 
   async follow(
     userUuid: string,
-    toFollowUsername: string,
+    toFollowUuid: string,
   ): Promise<{ success: boolean }> {
     try {
-      const toFollowUser = await this.prisma.user.findUnique({
-        where: { username: toFollowUsername },
-      });
-      if (!toFollowUser) {
-        throw new HttpException('User not found.', HttpStatus.NOT_FOUND);
-      }
       const isUserAlreadyFollowed = await this.isUserAlreadyFollowed(
         userUuid,
-        toFollowUser.uuid,
+        toFollowUuid,
       );
       if (isUserAlreadyFollowed) {
         throw new HttpException(
@@ -33,7 +27,7 @@ export class FollowerService {
         data: {
           following: {
             create: {
-              followerUuid: toFollowUser.uuid,
+              followerUuid: toFollowUuid,
             },
           },
         },
@@ -72,8 +66,8 @@ export class FollowerService {
   }
 
   async isUserAlreadyFollowed(
-    followerUuid: string,
     followingUuid: string,
+    followerUuid: string,
   ): Promise<boolean> {
     try {
       const follow = await this.prisma.follows.findUnique({
@@ -84,7 +78,41 @@ export class FollowerService {
           },
         },
       });
-      return !follow;
+      return !!follow;
+    } catch (err) {
+      const { message, status } = err;
+      throw new HttpException(message, status);
+    }
+  }
+
+  async unFollow(
+    userUuid: string,
+    toUnfollowUuid: string,
+  ): Promise<{ success: boolean }> {
+    try {
+      const isUserAlreadyFollowed = await this.isUserAlreadyFollowed(
+        userUuid,
+        toUnfollowUuid,
+      );
+      if (!isUserAlreadyFollowed) {
+        throw new HttpException('User is not followed.', HttpStatus.CONFLICT);
+      }
+      await this.prisma.user.update({
+        where: {
+          uuid: userUuid,
+        },
+        data: {
+          following: {
+            delete: {
+              followerUuid_followingUuid: {
+                followerUuid: toUnfollowUuid,
+                followingUuid: userUuid,
+              },
+            },
+          },
+        },
+      });
+      return { success: true };
     } catch (err) {
       const { message, status } = err;
       throw new HttpException(message, status);

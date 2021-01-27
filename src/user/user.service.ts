@@ -130,7 +130,27 @@ export class UserService {
     toFollowUsername: string,
   ): Promise<{ success: boolean }> {
     try {
-      return this.followerService.follow(userUuid, toFollowUsername);
+      const user = await this.findOne(toFollowUsername);
+      if (!user) {
+        throw new HttpException('User not found.', HttpStatus.NOT_FOUND);
+      }
+      return await this.followerService.follow(userUuid, user.uuid);
+    } catch (err) {
+      const { message, status } = err;
+      throw new HttpException(message, status);
+    }
+  }
+
+  async unFollowUser(
+    userUuid: string,
+    toUnfollowUsername: string,
+  ): Promise<{ success: boolean }> {
+    try {
+      const user = await this.findOne(toUnfollowUsername);
+      if (!user) {
+        throw new HttpException('User not found.', HttpStatus.NOT_FOUND);
+      }
+      return await this.followerService.unFollow(userUuid, user.uuid);
     } catch (err) {
       const { message, status } = err;
       throw new HttpException(message, status);
