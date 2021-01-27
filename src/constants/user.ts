@@ -81,8 +81,6 @@ export interface IValidatedUser {
   email: string;
   description: string | null;
   avatar: string | null;
-  followingCount: number;
-  followersCount: number;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -101,6 +99,4 @@ export interface IUserProfile {
   username: string;
   description: string;
   avatar: string | null;
-  followersCount: number;
-  followingCount: number;
 }

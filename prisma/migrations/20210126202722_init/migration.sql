@@ -1,6 +1,3 @@
--- CreateEnum
-CREATE TYPE "Status" AS ENUM ('ACTIVE', 'DELETED');
-
 -- CreateTable
 CREATE TABLE "User" (
     "uuid" TEXT NOT NULL,
@@ -9,8 +6,6 @@ CREATE TABLE "User" (
     "password" TEXT NOT NULL,
     "description" TEXT,
     "avatar" TEXT,
-    "followingCount" INTEGER NOT NULL DEFAULT 0,
-    "followersCount" INTEGER NOT NULL DEFAULT 0,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
@@ -40,11 +35,23 @@ CREATE TABLE "Comment" (
     PRIMARY KEY ("uuid")
 );
 
+-- CreateTable
+CREATE TABLE "_UserFollows" (
+    "A" TEXT NOT NULL,
+    "B" TEXT NOT NULL
+);
+
 -- CreateIndex
 CREATE UNIQUE INDEX "User.username_unique" ON "User"("username");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "User.email_unique" ON "User"("email");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "_UserFollows_AB_unique" ON "_UserFollows"("A", "B");
+
+-- CreateIndex
+CREATE INDEX "_UserFollows_B_index" ON "_UserFollows"("B");
 
 -- AddForeignKey
 ALTER TABLE "Post" ADD FOREIGN KEY("authorUuid")REFERENCES "User"("uuid") ON DELETE CASCADE ON UPDATE CASCADE;
@@ -54,3 +61,9 @@ ALTER TABLE "Comment" ADD FOREIGN KEY("postUuid")REFERENCES "Post"("uuid") ON DE
 
 -- AddForeignKey
 ALTER TABLE "Comment" ADD FOREIGN KEY("userUuid")REFERENCES "User"("uuid") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "_UserFollows" ADD FOREIGN KEY("A")REFERENCES "User"("uuid") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "_UserFollows" ADD FOREIGN KEY("B")REFERENCES "User"("uuid") ON DELETE CASCADE ON UPDATE CASCADE;

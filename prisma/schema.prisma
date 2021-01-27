@@ -10,11 +10,6 @@ generator client {
   provider = "prisma-client-js"
 }
 
-enum Status {
-    ACTIVE
-    DELETED
-}
-
 model User {
   uuid      String      @id @default(uuid())
   username  String      @unique
@@ -22,12 +17,12 @@ model User {
   password  String
   description String?
   avatar    String?
-  followingCount Int    @default(0)
-  followersCount Int    @default(0)
   posts     Post[]
   createdAt DateTime    @default(now())
   updatedAt DateTime    @updatedAt
   comment   Comment[]
+  following User[]      @relation("UserFollows", references: [uuid])
+  followedBy User[]     @relation("UserFollows", references: [uuid])
 }
 
 model Post {

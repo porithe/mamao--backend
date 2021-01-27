@@ -6,13 +6,16 @@ import {
   Request,
   Param,
   Get,
-  Query, ParseIntPipe,
+  Query,
+  ParseIntPipe,
 } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
   ApiBearerAuth,
   ApiCreatedResponse,
-  ApiInternalServerErrorResponse, ApiQuery,
+  ApiInternalServerErrorResponse,
+  ApiOkResponse,
+  ApiQuery,
   ApiTags,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
@@ -60,6 +63,15 @@ export class PostController {
   @ApiQuery({
     name: 'start',
     example: 0,
+  })
+  @ApiOkResponse({
+    description: 'Successfully returned posts.',
+  })
+  @ApiBadRequestResponse({
+    description: 'Bad request (validation error?).',
+  })
+  @ApiInternalServerErrorResponse({
+    description: 'Internal server error',
   })
   @Get('findAll/:username')
   async findPosts(

@@ -93,8 +93,6 @@ export class UserService {
           username: true,
           description: true,
           avatar: true,
-          followersCount: true,
-          followingCount: true,
         },
       });
       if (profile) {
@@ -102,8 +100,6 @@ export class UserService {
           username: profile.username,
           description: profile.description || '',
           avatar: profile.avatar || '',
-          followersCount: profile.followersCount,
-          followingCount: profile.followingCount,
         };
       }
       throw new HttpException(
