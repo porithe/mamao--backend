@@ -10,10 +10,14 @@ import {
   UserErrorMessages,
 } from '../constants/user';
 import { hash } from 'bcrypt';
+import { FollowerService } from '../follower/follower.service';
 
 @Injectable()
 export class UserService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private readonly followerService: FollowerService,
+  ) {}
 
   async createUser(userData: CreateUserDto): Promise<ICreatedUser> {
     try {
@@ -90,22 +94,43 @@ export class UserService {
           username,
         },
         select: {
+          uuid: true,
           username: true,
           description: true,
           avatar: true,
         },
       });
       if (profile) {
+        const following = await this.followerService.countFollowing(
+          profile.uuid,
+        );
+        const followers = await this.followerService.countFollowers(
+          profile.uuid,
+        );
         return {
           username: profile.username,
           description: profile.description || '',
           avatar: profile.avatar || '',
+          following: following,
+          followers: followers,
         };
       }
       throw new HttpException(
         UserErrorMessages.NOT_FOUND,
         HttpStatus.NOT_FOUND,
       );
+    } catch (err) {
+      const { message, status } = err;
+      throw new HttpException(message, status);
+    }
+  }
+
+  async followUser(
+    userUuid: string,
+    toFollowUsername: string,
+  ): Promise<{ success: boolean }> {
+    try {
+      return this.followerService.follow(userUuid, toFollowUsername);
     } catch (err) {
       const { message, status } = err;
       throw new HttpException(message, status);

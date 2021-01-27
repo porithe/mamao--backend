@@ -7,6 +7,7 @@ import { AuthModule } from './auth/auth.module';
 import { ConfigModule } from '@nestjs/config';
 import { PostModule } from './post/post.module';
 import { CommentModule } from './comment/comment.module';
+import { FollowerModule } from './follower/follower.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { CommentModule } from './comment/comment.module';
     AuthModule,
     PostModule,
     CommentModule,
+    FollowerModule,
   ],
   controllers: [AppController],
   providers: [AppService],

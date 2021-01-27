@@ -62,6 +62,14 @@ export class FindProfileDto {
   username: string;
 }
 
+export class FollowUserDto {
+  @ApiProperty({
+    default: 'johndoeXD',
+  })
+  @Length(4, 24)
+  username: string;
+}
+
 export interface ICreatedUser {
   uuid: string;
   username: string;
@@ -99,4 +107,6 @@ export interface IUserProfile {
   username: string;
   description: string;
   avatar: string | null;
+  followers: number;
+  following: number;
 }

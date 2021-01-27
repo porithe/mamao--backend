@@ -4,6 +4,7 @@ import {
   Get,
   Param,
   Patch,
+  Put,
   Request,
   UseGuards,
 } from '@nestjs/common';
@@ -11,13 +12,14 @@ import { UserService } from './user.service';
 import {
   EditUserDataDto,
   FindProfileDto,
+  FollowUserDto,
   IUserDataUpdated,
   IUserProfile,
   IUserRequestJwt,
 } from '../constants/user';
 import {
   ApiBadRequestResponse,
-  ApiBearerAuth,
+  ApiBearerAuth, ApiConflictResponse,
   ApiInternalServerErrorResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
@@ -66,9 +68,32 @@ export class UserController {
     description: 'Internal server error',
   })
   @Get(':username')
-  async findProfile(
-    @Param() params: FindProfileDto,
-  ): Promise<IUserProfile | null> {
+  async findProfile(@Param() params: FindProfileDto): Promise<IUserProfile | null> {
     return await this.userService.findProfile(params.username);
+  }
+
+  @ApiBearerAuth()
+  @ApiOkResponse({
+    description: 'Successfully followed.',
+  })
+  @ApiBadRequestResponse({
+    description: 'Bad request (validation error?).',
+  })
+  @ApiNotFoundResponse({
+    description: 'User not found.',
+  })
+  @ApiConflictResponse({
+    description: 'User is already followed.',
+  })
+  @ApiInternalServerErrorResponse({
+    description: 'Internal server error',
+  })
+  @UseGuards(JwtAuthGuard)
+  @Put('follow/:username')
+  async followProfile(
+    @Request() req: { user: IUserRequestJwt },
+    @Param() params: FollowUserDto,
+  ): Promise<{ success: boolean }> {
+    return await this.userService.followUser(req.user.uuid, params.username);
   }
 }

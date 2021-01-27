@@ -13,6 +13,14 @@ CREATE TABLE "User" (
 );
 
 -- CreateTable
+CREATE TABLE "Follows" (
+    "followerUuid" TEXT NOT NULL,
+    "followingUuid" TEXT NOT NULL,
+
+    PRIMARY KEY ("followerUuid","followingUuid")
+);
+
+-- CreateTable
 CREATE TABLE "Post" (
     "uuid" TEXT NOT NULL,
     "text" TEXT NOT NULL,
@@ -35,23 +43,17 @@ CREATE TABLE "Comment" (
     PRIMARY KEY ("uuid")
 );
 
--- CreateTable
-CREATE TABLE "_UserFollows" (
-    "A" TEXT NOT NULL,
-    "B" TEXT NOT NULL
-);
-
 -- CreateIndex
 CREATE UNIQUE INDEX "User.username_unique" ON "User"("username");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "User.email_unique" ON "User"("email");
 
--- CreateIndex
-CREATE UNIQUE INDEX "_UserFollows_AB_unique" ON "_UserFollows"("A", "B");
+-- AddForeignKey
+ALTER TABLE "Follows" ADD FOREIGN KEY("followerUuid")REFERENCES "User"("uuid") ON DELETE CASCADE ON UPDATE CASCADE;
 
--- CreateIndex
-CREATE INDEX "_UserFollows_B_index" ON "_UserFollows"("B");
+-- AddForeignKey
+ALTER TABLE "Follows" ADD FOREIGN KEY("followingUuid")REFERENCES "User"("uuid") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Post" ADD FOREIGN KEY("authorUuid")REFERENCES "User"("uuid") ON DELETE CASCADE ON UPDATE CASCADE;
@@ -61,9 +63,3 @@ ALTER TABLE "Comment" ADD FOREIGN KEY("postUuid")REFERENCES "Post"("uuid") ON DE
 
 -- AddForeignKey
 ALTER TABLE "Comment" ADD FOREIGN KEY("userUuid")REFERENCES "User"("uuid") ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "_UserFollows" ADD FOREIGN KEY("A")REFERENCES "User"("uuid") ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "_UserFollows" ADD FOREIGN KEY("B")REFERENCES "User"("uuid") ON DELETE CASCADE ON UPDATE CASCADE;
