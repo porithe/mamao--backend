@@ -4,7 +4,7 @@ import { User } from '@prisma/client';
 import {
   CreateUserDto,
   EditUserDataDto,
-  ICreatedUser,
+  ICreatedUser, IFoundUser,
   IUserDataUpdated,
   IUserProfile,
   UserErrorMessages,
@@ -151,6 +151,25 @@ export class UserService {
         throw new HttpException('User not found.', HttpStatus.NOT_FOUND);
       }
       return await this.followerService.unFollow(userUuid, user.uuid);
+    } catch (err) {
+      const { message, status } = err;
+      throw new HttpException(message, status);
+    }
+  }
+
+  async searchUsers(username: string): Promise<IFoundUser[] | []> {
+    try {
+      return await this.prisma.user.findMany({
+        where: {
+          username: {
+            contains: username,
+          },
+        },
+        select: {
+          username: true,
+          avatar: true,
+        },
+      });
     } catch (err) {
       const { message, status } = err;
       throw new HttpException(message, status);

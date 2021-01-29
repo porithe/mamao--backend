@@ -70,6 +70,14 @@ export class FollowUserDto {
   username: string;
 }
 
+export class SearchUserDto {
+  @ApiProperty({
+    default: 'john',
+  })
+  @Length(4, 24)
+  username: string;
+}
+
 export interface ICreatedUser {
   uuid: string;
   username: string;
@@ -109,4 +117,9 @@ export interface IUserProfile {
   avatar: string | null;
   followers: number;
   following: number;
+}
+
+export interface IFoundUser {
+  username: string;
+  avatar: string | null;
 }

@@ -12,14 +12,15 @@ import { UserService } from './user.service';
 import {
   EditUserDataDto,
   FindProfileDto,
-  FollowUserDto,
+  FollowUserDto, IFoundUser,
   IUserDataUpdated,
   IUserProfile,
-  IUserRequestJwt,
+  IUserRequestJwt, SearchUserDto,
 } from '../constants/user';
 import {
   ApiBadRequestResponse,
-  ApiBearerAuth, ApiConflictResponse,
+  ApiBearerAuth,
+  ApiConflictResponse,
   ApiInternalServerErrorResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
@@ -68,7 +69,9 @@ export class UserController {
     description: 'Internal server error',
   })
   @Get(':username')
-  async findProfile(@Param() params: FindProfileDto): Promise<IUserProfile | null> {
+  async findProfile(
+    @Param() params: FindProfileDto,
+  ): Promise<IUserProfile | null> {
     return await this.userService.findProfile(params.username);
   }
 
@@ -120,5 +123,19 @@ export class UserController {
     @Param() params: FollowUserDto,
   ): Promise<{ success: boolean }> {
     return await this.userService.unFollowUser(req.user.uuid, params.username);
+  }
+
+  @ApiOkResponse({
+    description: 'Successfully returned users.',
+  })
+  @ApiBadRequestResponse({
+    description: 'Bad request (validation error?).',
+  })
+  @ApiInternalServerErrorResponse({
+    description: 'Internal server error',
+  })
+  @Get('search/:username')
+  async search(@Param() params: SearchUserDto): Promise<IFoundUser[] | []> {
+    return await this.userService.searchUsers(params.username);
   }
 }
