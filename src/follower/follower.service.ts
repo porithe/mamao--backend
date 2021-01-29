@@ -1,6 +1,5 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { IFollowingUuidList } from '../constants/follower';
 
 @Injectable()
 export class FollowerService {
@@ -26,9 +25,9 @@ export class FollowerService {
           uuid: userUuid,
         },
         data: {
-          followers: {
+          following: {
             create: {
-              followingUuid: toFollowUuid,
+              followerUuid: toFollowUuid,
             },
           },
         },
@@ -42,7 +41,6 @@ export class FollowerService {
 
   async countFollowing(userUuid: string): Promise<number> {
     try {
-      console.log(await this.getFollowingUuidList(userUuid));
       return await this.prisma.follows.count({
         where: {
           followerUuid: userUuid,
@@ -68,8 +66,8 @@ export class FollowerService {
   }
 
   private async isUserAlreadyFollowed(
-    followerUuid: string,
     followingUuid: string,
+    followerUuid: string,
   ): Promise<boolean> {
     try {
       const follow = await this.prisma.follows.findUnique({
@@ -107,30 +105,14 @@ export class FollowerService {
           following: {
             delete: {
               followerUuid_followingUuid: {
-                followerUuid: userUuid,
-                followingUuid: toUnfollowUuid,
+                followerUuid: toUnfollowUuid,
+                followingUuid: userUuid,
               },
             },
           },
         },
       });
       return { success: true };
-    } catch (err) {
-      const { message, status } = err;
-      throw new HttpException(message, status);
-    }
-  }
-
-  async getFollowingUuidList(userUuid: string): Promise<IFollowingUuidList[]> {
-    try {
-      return await this.prisma.follows.findMany({
-        where: {
-          followerUuid: userUuid,
-        },
-        select: {
-          followingUuid: true,
-        },
-      });
     } catch (err) {
       const { message, status } = err;
       throw new HttpException(message, status);

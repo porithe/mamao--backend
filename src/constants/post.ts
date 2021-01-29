@@ -22,15 +22,32 @@ export interface IAddedPost {
   createdAt: Date;
 }
 
-interface FoundPost {
+export interface IFoundPost {
   uuid: string;
   createdAt: Date;
   text: string;
-  commentsCount: number;
+  commentCount?: number;
+}
+
+export interface IFoundPostWithAuthor {
+  author?: {
+    username: string;
+  };
+  uuid: string;
+  createdAt: Date;
+  text: string;
+  commentCount?: number;
+}
+
+export interface IFoundPostsWithAuthor {
+  data: IFoundPostWithAuthor[];
+  pagination: {
+    next: string;
+  };
 }
 
 export interface IFoundPosts {
-  data: FoundPost[];
+  data: IFoundPost[];
   pagination: {
     next: string;
   };

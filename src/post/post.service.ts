@@ -1,6 +1,11 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { HttpException, Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { AddPostDto, IAddedPost, IFoundPosts } from '../constants/post';
+import {
+  AddPostDto,
+  IAddedPost,
+  IFoundPosts,
+  IFoundPostWithAuthor,
+} from '../constants/post';
 
 @Injectable()
 export class PostService {
@@ -26,10 +31,12 @@ export class PostService {
     }
   }
 
-  async addCommentsCountToPosts(posts: any): Promise<any> {
+  async addCommentsCountToPosts(
+    posts: IFoundPostWithAuthor[],
+  ): Promise<IFoundPostWithAuthor[]> {
     try {
       for await (const post of posts) {
-        post.commentCountXD = await this.prisma.comment.count({
+        post.commentCount = await this.prisma.comment.count({
           where: {
             postUuid: post.uuid,
           },
@@ -44,8 +51,8 @@ export class PostService {
 
   async findPosts(
     username: string,
-    limit: number,
-    start: number,
+    limit = 10,
+    start = 0,
   ): Promise<IFoundPosts | []> {
     try {
       const posts = await this.prisma.post.findMany({
@@ -66,7 +73,9 @@ export class PostService {
           pagination: {
             next: `${
               process.env.URL_API
-            }post/findAll/${username}/?limit=${limit}&start=${start + 10}`,
+            }post/findAll/${username}/?limit=${limit}&start=${
+              start + PostService.paginationCount(posts.length)
+            }`,
           },
         };
       }
@@ -74,6 +83,60 @@ export class PostService {
     } catch (err) {
       const { message, status } = err;
       throw new HttpException(message, status);
+    }
+  }
+
+  async findPostsByUuid(uuid: string, start = 0): Promise<any> {
+    try {
+      const posts = await this.prisma.post.findMany({
+        where: {
+          author: {
+            followers: {
+              some: {
+                followingUuid: uuid,
+              },
+            },
+          },
+        },
+        select: {
+          author: {
+            select: {
+              username: true,
+            },
+          },
+          uuid: true,
+          createdAt: true,
+          text: true,
+        },
+        orderBy: {
+          createdAt: 'desc',
+        },
+        take: 10,
+        skip: start,
+      });
+      if (posts.length > 0) {
+        const postsWithCommentCount = await this.addCommentsCountToPosts(posts);
+        return {
+          data: postsWithCommentCount,
+          pagination: {
+            next: `${process.env.URL_API}table?start=${
+              start + PostService.paginationCount(posts.length)
+            }`,
+          },
+        };
+      }
+      return [];
+    } catch (err) {
+      const { message, status } = err;
+      throw new HttpException(message, status);
+    }
+  }
+
+  private static paginationCount(numOfPosts: number) {
+    if (numOfPosts === 10) {
+      return 10;
+    } else {
+      return numOfPosts;
     }
   }
 }
