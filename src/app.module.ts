@@ -9,6 +9,7 @@ import { PostModule } from './post/post.module';
 import { CommentModule } from './comment/comment.module';
 import { FollowerModule } from './follower/follower.module';
 import { TableModule } from './table/table.module';
+import { LikeModule } from './like/like.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { TableModule } from './table/table.module';
     CommentModule,
     FollowerModule,
     TableModule,
+    LikeModule,
   ],
   controllers: [AppController],
   providers: [AppService],

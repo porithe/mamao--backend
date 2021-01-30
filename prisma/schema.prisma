@@ -20,9 +20,10 @@ model User {
   posts     Post[]
   createdAt DateTime    @default(now())
   updatedAt DateTime    @updatedAt
-  comment   Comment[]
+  comments   Comment[]
   followers Follows[]   @relation("follower")
   following Follows[]   @relation("following")
+  likes      Like[]
 }
 
 model Follows {
@@ -42,6 +43,15 @@ model Post {
   author    User        @relation(fields: [authorUuid], references: [uuid])
   authorUuid String
   comments  Comment[]
+  likes     Like[]
+}
+
+model Like {
+  uuid      String      @id @default(uuid())
+  post      Post        @relation(fields: [postUuid], references: [uuid])
+  postUuid  String
+  user      User        @relation(fields: [userUuid], references: [uuid])
+  userUuid  String
 }
 
 model Comment {

@@ -31,12 +31,30 @@ export class PostService {
     }
   }
 
-  async addCommentsCountToPosts(
+  private async addCommentCountToPosts(
     posts: IFoundPostWithAuthor[],
   ): Promise<IFoundPostWithAuthor[]> {
     try {
       for await (const post of posts) {
         post.commentCount = await this.prisma.comment.count({
+          where: {
+            postUuid: post.uuid,
+          },
+        });
+      }
+      return posts;
+    } catch (err) {
+      const { message, status } = err;
+      throw new HttpException(message, status);
+    }
+  }
+
+  private async addLikeCountToPosts(
+    posts: IFoundPostWithAuthor[],
+  ): Promise<IFoundPostWithAuthor[]> {
+    try {
+      for await (const post of posts) {
+        post.likeCount = await this.prisma.like.count({
           where: {
             postUuid: post.uuid,
           },
@@ -68,8 +86,12 @@ export class PostService {
         take: limit,
       });
       if (posts.length > 0) {
+        const postsWithCommentCount = await this.addCommentCountToPosts(posts);
+        const postsWithLikeCount = await this.addLikeCountToPosts(
+          postsWithCommentCount,
+        );
         return {
-          data: await this.addCommentsCountToPosts(posts),
+          data: postsWithLikeCount,
           pagination: {
             next: `${
               process.env.URL_API
@@ -115,9 +137,12 @@ export class PostService {
         skip: start,
       });
       if (posts.length > 0) {
-        const postsWithCommentCount = await this.addCommentsCountToPosts(posts);
+        const postsWithCommentCount = await this.addCommentCountToPosts(posts);
+        const postsWithLikeCount = await this.addLikeCountToPosts(
+          postsWithCommentCount,
+        );
         return {
-          data: postsWithCommentCount,
+          data: postsWithLikeCount,
           pagination: {
             next: `${process.env.URL_API}table?start=${
               start + PostService.paginationCount(posts.length)

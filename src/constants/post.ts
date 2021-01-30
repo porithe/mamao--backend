@@ -37,6 +37,7 @@ export interface IFoundPostWithAuthor {
   createdAt: Date;
   text: string;
   commentCount?: number;
+  likeCount?: number;
 }
 
 export interface IFoundPostsWithAuthor {

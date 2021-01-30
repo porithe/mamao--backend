@@ -11,9 +11,9 @@ import {
 } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
-  ApiBearerAuth,
+  ApiBearerAuth, ApiConflictResponse,
   ApiCreatedResponse,
-  ApiInternalServerErrorResponse,
+  ApiInternalServerErrorResponse, ApiNotFoundResponse,
   ApiOkResponse,
   ApiQuery,
   ApiTags,
@@ -28,11 +28,16 @@ import {
   IFoundPosts,
 } from '../constants/post';
 import { IUserRequestJwt } from '../constants/user';
+import { LikeService } from '../like/like.service';
+import { LikePostDto } from '../constants/like';
 
 @ApiTags('post')
 @Controller('v1/post')
 export class PostController {
-  constructor(private readonly postService: PostService) {}
+  constructor(
+    private readonly postService: PostService,
+    private readonly likeService: LikeService,
+  ) {}
 
   @ApiBearerAuth()
   @ApiCreatedResponse({
@@ -80,5 +85,55 @@ export class PostController {
     @Query('start', ParseIntPipe) start: number,
   ): Promise<IFoundPosts | []> {
     return await this.postService.findPosts(params.username, limit, start);
+  }
+
+  @ApiBearerAuth()
+  @ApiOkResponse({
+    description: 'Successfully liked post.',
+  })
+  @ApiBadRequestResponse({
+    description: 'Bad request (validation error?).',
+  })
+  @ApiNotFoundResponse({
+    description: 'Post not found.',
+  })
+  @ApiConflictResponse({
+    description: 'Post is already liked.',
+  })
+  @ApiInternalServerErrorResponse({
+    description: 'Internal server error',
+  })
+  @UseGuards(JwtAuthGuard)
+  @Get('like/:postUuid')
+  async likePost(
+    @Request() req: { user: IUserRequestJwt },
+    @Param() params: LikePostDto,
+  ): Promise<{ success: boolean }> {
+    return await this.likeService.likePost(req.user.uuid, params.postUuid);
+  }
+
+  @ApiBearerAuth()
+  @ApiOkResponse({
+    description: 'Successfully unliked post.',
+  })
+  @ApiBadRequestResponse({
+    description: 'Bad request (validation error?).',
+  })
+  @ApiNotFoundResponse({
+    description: 'Post not found.',
+  })
+  @ApiConflictResponse({
+    description: 'Post is not liked.',
+  })
+  @ApiInternalServerErrorResponse({
+    description: 'Internal server error',
+  })
+  @UseGuards(JwtAuthGuard)
+  @Get('unlike/:postUuid')
+  async unLikePost(
+    @Request() req: { user: IUserRequestJwt },
+    @Param() params: LikePostDto,
+  ): Promise<{ success: boolean }> {
+    return await this.likeService.unLikePost(req.user.uuid, params.postUuid);
   }
 }

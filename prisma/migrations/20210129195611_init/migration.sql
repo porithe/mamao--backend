@@ -32,6 +32,15 @@ CREATE TABLE "Post" (
 );
 
 -- CreateTable
+CREATE TABLE "Like" (
+    "uuid" TEXT NOT NULL,
+    "postUuid" TEXT NOT NULL,
+    "userUuid" TEXT NOT NULL,
+
+    PRIMARY KEY ("uuid")
+);
+
+-- CreateTable
 CREATE TABLE "Comment" (
     "uuid" TEXT NOT NULL,
     "text" TEXT NOT NULL,
@@ -57,6 +66,12 @@ ALTER TABLE "Follows" ADD FOREIGN KEY("followingUuid")REFERENCES "User"("uuid") 
 
 -- AddForeignKey
 ALTER TABLE "Post" ADD FOREIGN KEY("authorUuid")REFERENCES "User"("uuid") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Like" ADD FOREIGN KEY("postUuid")REFERENCES "Post"("uuid") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Like" ADD FOREIGN KEY("userUuid")REFERENCES "User"("uuid") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Comment" ADD FOREIGN KEY("postUuid")REFERENCES "Post"("uuid") ON DELETE CASCADE ON UPDATE CASCADE;
