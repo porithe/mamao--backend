@@ -38,6 +38,7 @@ export interface IFoundPostWithAuthor {
   text: string;
   commentCount?: number;
   likeCount?: number;
+  isLiked?: boolean;
 }
 
 export interface IFoundPostsWithAuthor {

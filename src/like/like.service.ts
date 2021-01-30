@@ -10,7 +10,7 @@ export class LikeService {
     postUuid: string,
   ): Promise<{ success: boolean }> {
     try {
-      const isPostLiked = await this.isPostIsAlreadyLiked(userUuid, postUuid);
+      const isPostLiked = await this.isPostAlreadyLiked(userUuid, postUuid);
       if (isPostLiked) {
         throw new HttpException('Post is already liked', HttpStatus.CONFLICT);
       }
@@ -35,7 +35,7 @@ export class LikeService {
     }
   }
 
-  private async isPostIsAlreadyLiked(
+  async isPostAlreadyLiked(
     userUuid: string,
     postUuid: string,
   ): Promise<boolean> {
@@ -67,7 +67,7 @@ export class LikeService {
     postUuid: string,
   ): Promise<{ success: boolean }> {
     try {
-      const isPostLiked = await this.isPostIsAlreadyLiked(userUuid, postUuid);
+      const isPostLiked = await this.isPostAlreadyLiked(userUuid, postUuid);
       if (!isPostLiked) {
         throw new HttpException('Post is not liked', HttpStatus.CONFLICT);
       }

@@ -61,6 +61,7 @@ export class PostController {
     return await this.postService.addPost(req.user.uuid, postData);
   }
 
+  @ApiBearerAuth()
   @ApiQuery({
     name: 'limit',
     example: 10,
@@ -78,13 +79,15 @@ export class PostController {
   @ApiInternalServerErrorResponse({
     description: 'Internal server error',
   })
+  @UseGuards(JwtAuthGuard)
   @Get('findAll/:username')
   async findPosts(
+    @Request() req: { user: IUserRequestJwt },
     @Param() params: FindPostsDto,
     @Query('limit', ParseIntPipe) limit: number,
     @Query('start', ParseIntPipe) start: number,
   ): Promise<IFoundPosts | []> {
-    return await this.postService.findPosts(params.username, limit, start);
+    return await this.postService.findPosts(params.username, req.user.uuid, limit, start);
   }
 
   @ApiBearerAuth()

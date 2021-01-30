@@ -3,9 +3,10 @@ import { TableService } from './table.service';
 import { TableController } from './table.controller';
 import { PrismaService } from '../prisma/prisma.service';
 import { PostService } from '../post/post.service';
+import { LikeService } from '../like/like.service';
 
 @Module({
-  providers: [TableService, PrismaService, PostService],
+  providers: [TableService, PrismaService, PostService, LikeService],
   controllers: [TableController],
 })
 export class TableModule {}

@@ -6,10 +6,14 @@ import {
   IFoundPosts,
   IFoundPostWithAuthor,
 } from '../constants/post';
+import { LikeService } from '../like/like.service';
 
 @Injectable()
 export class PostService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private readonly likeService: LikeService,
+  ) {}
 
   async addPost(userUuid: string, { text }: AddPostDto): Promise<IAddedPost> {
     try {
@@ -51,14 +55,20 @@ export class PostService {
 
   private async addLikeCountToPosts(
     posts: IFoundPostWithAuthor[],
+    userUuid: string,
   ): Promise<IFoundPostWithAuthor[]> {
     try {
       for await (const post of posts) {
+        const isLiked = await this.likeService.isPostAlreadyLiked(
+          userUuid,
+          post.uuid,
+        );
         post.likeCount = await this.prisma.like.count({
           where: {
             postUuid: post.uuid,
           },
         });
+        post.isLiked = isLiked;
       }
       return posts;
     } catch (err) {
@@ -69,6 +79,7 @@ export class PostService {
 
   async findPosts(
     username: string,
+    userUuid: string,
     limit = 10,
     start = 0,
   ): Promise<IFoundPosts | []> {
@@ -89,6 +100,7 @@ export class PostService {
         const postsWithCommentCount = await this.addCommentCountToPosts(posts);
         const postsWithLikeCount = await this.addLikeCountToPosts(
           postsWithCommentCount,
+          userUuid,
         );
         return {
           data: postsWithLikeCount,
@@ -140,6 +152,7 @@ export class PostService {
         const postsWithCommentCount = await this.addCommentCountToPosts(posts);
         const postsWithLikeCount = await this.addLikeCountToPosts(
           postsWithCommentCount,
+          uuid,
         );
         return {
           data: postsWithLikeCount,
