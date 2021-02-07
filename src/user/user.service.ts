@@ -169,6 +169,7 @@ export class UserService {
           username: true,
           avatar: true,
         },
+        take: 5,
       });
     } catch (err) {
       const { message, status } = err;
