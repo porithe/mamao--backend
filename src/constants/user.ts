@@ -117,6 +117,8 @@ export interface IUserProfile {
   avatar: string | null;
   followers: number;
   following: number;
+  createdAt: Date;
+  isFollowed: boolean;
 }
 
 export interface IFoundUser {

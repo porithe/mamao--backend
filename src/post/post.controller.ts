@@ -11,9 +11,11 @@ import {
 } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
-  ApiBearerAuth, ApiConflictResponse,
+  ApiBearerAuth,
+  ApiConflictResponse,
   ApiCreatedResponse,
-  ApiInternalServerErrorResponse, ApiNotFoundResponse,
+  ApiInternalServerErrorResponse,
+  ApiNotFoundResponse,
   ApiOkResponse,
   ApiQuery,
   ApiTags,
@@ -29,7 +31,7 @@ import {
 } from '../constants/post';
 import { IUserRequestJwt } from '../constants/user';
 import { LikeService } from '../like/like.service';
-import { LikePostDto } from '../constants/like';
+import { LikePostDto } from 'src/constants/like';
 
 @ApiTags('post')
 @Controller('v1/post')
@@ -87,7 +89,12 @@ export class PostController {
     @Query('limit', ParseIntPipe) limit: number,
     @Query('start', ParseIntPipe) start: number,
   ): Promise<IFoundPosts | []> {
-    return await this.postService.findPosts(params.username, req.user.uuid, limit, start);
+    return await this.postService.findPosts(
+      params.username,
+      req.user.uuid,
+      limit,
+      start,
+    );
   }
 
   @ApiBearerAuth()
@@ -117,7 +124,7 @@ export class PostController {
 
   @ApiBearerAuth()
   @ApiOkResponse({
-    description: 'Successfully unliked post.',
+    description: 'Successfully disliked post.',
   })
   @ApiBadRequestResponse({
     description: 'Bad request (validation error?).',
@@ -132,11 +139,11 @@ export class PostController {
     description: 'Internal server error',
   })
   @UseGuards(JwtAuthGuard)
-  @Get('unlike/:postUuid')
+  @Get('dislike/:postUuid')
   async unLikePost(
     @Request() req: { user: IUserRequestJwt },
     @Param() params: LikePostDto,
   ): Promise<{ success: boolean }> {
-    return await this.likeService.unLikePost(req.user.uuid, params.postUuid);
+    return await this.likeService.disLikePost(req.user.uuid, params.postUuid);
   }
 }

@@ -65,7 +65,7 @@ export class FollowerService {
     }
   }
 
-  private async isUserAlreadyFollowed(
+  async isUserAlreadyFollowed(
     followingUuid: string,
     followerUuid: string,
   ): Promise<boolean> {

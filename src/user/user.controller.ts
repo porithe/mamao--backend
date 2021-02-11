@@ -56,6 +56,7 @@ export class UserController {
     return this.userService.editUserData(req.user.uuid, userData);
   }
 
+  @ApiBearerAuth()
   @ApiOkResponse({
     description: 'Successfully returned user profile.',
   })
@@ -68,11 +69,13 @@ export class UserController {
   @ApiInternalServerErrorResponse({
     description: 'Internal server error',
   })
+  @UseGuards(JwtAuthGuard)
   @Get(':username')
   async findProfile(
+    @Request() req: { user: IUserRequestJwt },
     @Param() params: FindProfileDto,
   ): Promise<IUserProfile | null> {
-    return await this.userService.findProfile(params.username);
+    return await this.userService.findProfile(req.user.uuid, params.username);
   }
 
   @ApiBearerAuth()

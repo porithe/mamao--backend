@@ -4,7 +4,8 @@ import { User } from '@prisma/client';
 import {
   CreateUserDto,
   EditUserDataDto,
-  ICreatedUser, IFoundUser,
+  ICreatedUser,
+  IFoundUser,
   IUserDataUpdated,
   IUserProfile,
   UserErrorMessages,
@@ -87,7 +88,10 @@ export class UserService {
     }
   }
 
-  async findProfile(username: string): Promise<IUserProfile | null> {
+  async findProfile(
+    userUuid: string,
+    username: string,
+  ): Promise<IUserProfile | null> {
     try {
       const profile = await this.prisma.user.findUnique({
         where: {
@@ -98,6 +102,7 @@ export class UserService {
           username: true,
           description: true,
           avatar: true,
+          createdAt: true,
         },
       });
       if (profile) {
@@ -107,12 +112,18 @@ export class UserService {
         const followers = await this.followerService.countFollowers(
           profile.uuid,
         );
+        const isFollowed = await this.followerService.isUserAlreadyFollowed(
+          userUuid,
+          profile.uuid,
+        );
         return {
           username: profile.username,
           description: profile.description || '',
           avatar: profile.avatar || '',
-          following: following,
-          followers: followers,
+          following: followers,
+          followers: following,
+          createdAt: profile.createdAt,
+          isFollowed,
         };
       }
       throw new HttpException(

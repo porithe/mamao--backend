@@ -43,14 +43,10 @@ export interface IFoundPostWithAuthor {
 
 export interface IFoundPostsWithAuthor {
   data: IFoundPostWithAuthor[];
-  pagination: {
-    next: string;
-  };
+  paginationNumber: number | null;
 }
 
 export interface IFoundPosts {
   data: IFoundPost[];
-  pagination: {
-    next: string;
-  };
+  paginationNumber: number | null;
 }

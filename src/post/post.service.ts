@@ -90,6 +90,16 @@ export class PostService {
             username,
           },
         },
+        select: {
+          author: {
+            select: {
+              username: true,
+            },
+          },
+          uuid: true,
+          createdAt: true,
+          text: true,
+        },
         orderBy: {
           createdAt: 'desc',
         },
@@ -104,13 +114,10 @@ export class PostService {
         );
         return {
           data: postsWithLikeCount,
-          pagination: {
-            next: `${
-              process.env.URL_API
-            }post/findAll/${username}/?limit=${limit}&start=${
-              start + PostService.paginationCount(posts.length)
-            }`,
-          },
+          paginationNumber:
+            PostService.paginationCount(posts.length) === 10
+              ? PostService.paginationCount(posts.length) + start
+              : null,
         };
       }
       return [];
@@ -156,11 +163,10 @@ export class PostService {
         );
         return {
           data: postsWithLikeCount,
-          pagination: {
-            next: `${process.env.URL_API}table?start=${
-              start + PostService.paginationCount(posts.length)
-            }`,
-          },
+          paginationNumber:
+            PostService.paginationCount(posts.length) === 10
+              ? PostService.paginationCount(posts.length) + start
+              : null,
         };
       }
       return [];

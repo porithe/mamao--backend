@@ -62,7 +62,7 @@ export class LikeService {
     }
   }
 
-  async unLikePost(
+  async disLikePost(
     userUuid: string,
     postUuid: string,
   ): Promise<{ success: boolean }> {
