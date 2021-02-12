@@ -1,0 +1,12 @@
+version: '3'
+
+services:
+  mamao_db:
+    container_name: "mamao_db"
+    image: postgres:13.1-alpine
+    ports:
+      - "${MAMAO_DB_PORT}:${MAMAO_DB_PORT}"
+    environment:
+      - POSTGRES_USER=${MAMAO_DB_USERNAME}
+      - POSTGRES_PASSWORD=${MAMAO_DB_PASSWORD}
+      - POSTGRES_DB=${MAMAO_DB_NAME}
