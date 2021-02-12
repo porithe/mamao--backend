@@ -32,6 +32,7 @@ export interface IFoundPost {
 export interface IFoundPostWithAuthor {
   author?: {
     username: string;
+    avatar: string;
   };
   uuid: string;
   createdAt: Date;

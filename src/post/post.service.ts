@@ -36,7 +36,7 @@ export class PostService {
   }
 
   private async addCommentCountToPosts(
-    posts: IFoundPostWithAuthor[],
+    posts: any,
   ): Promise<IFoundPostWithAuthor[]> {
     try {
       for await (const post of posts) {
@@ -94,6 +94,7 @@ export class PostService {
           author: {
             select: {
               username: true,
+              avatar: true,
             },
           },
           uuid: true,
@@ -143,6 +144,7 @@ export class PostService {
           author: {
             select: {
               username: true,
+              avatar: true,
             },
           },
           uuid: true,
