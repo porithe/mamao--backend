@@ -50,7 +50,7 @@ export class EditUserDataDto {
   @ApiProperty({
     default: 'myimg.com/img.jpg',
   })
-  @Length(0, 120)
+  @Length(0, 350)
   avatar: string;
 }
 
